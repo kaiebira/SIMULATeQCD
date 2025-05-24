@@ -289,45 +289,38 @@ case $1 in
       # Check to make sure CUDA version is valid if using nvidia or hip_nvidia
       if [[ "$PROFILE" == "nvidia" || "$PROFILE" == "hip_nvidia" ]]; then
 
-          # Check if CUDA_VERSION is set to latest and if it is grab the latest CUDA version
+          # This function gets the latest CUDA version from NVIDIA's website
+          get_latest_cuda_version() {
+          local url="https://developer.nvidia.com/cuda-toolkit-archive"
+          local content=$(curl -s "$url")
+          local latest_version=$(echo "$content" | grep -oP 'Latest Release[\s\S]*?CUDA Toolkit \K[0-9]+\.[0-9]+\.[0-9]+')
+          echo "$latest_version"
+          }
+
+          # Check if CUDA_VERSION is set to "latest" and if so, fetch the latest version
           if [[ "$CUDA_VERSION" == "latest" ]]; then
-              # Define the URL for the CUDA Toolkit Archive
-              url="https://developer.nvidia.com/cuda-toolkit-archive"
-
-              # Get the page content and filter for lines containing the latest release
-              content=$(curl -s "$url" | grep -oP "Latest Release[\s\S]*?</li>")
-
-              # Get the latest version number by extracting the version number from the filtered content
-              latest_version=$(echo "$content" | grep -oP "CUDA Toolkit \K[0-9]+\.[0-9]+\.[0-9]+" | head -n1)
-
-              echo "Using latest CUDA version $latest_version"
-              CUDA_VERSION=$latest_version
-          else
-              echo "CUDA_VERSION is set to ${CUDA_VERSION}"
-          fi
-
-          # Check if CUDA_VERSION is set
+          CUDA_VERSION=$(get_latest_cuda_version)
           if [ -z "$CUDA_VERSION" ]; then
-              echo "Please set the CUDA_VERSION environment variable."
-              exit 1
+          echo "Failed to fetch the latest CUDA version. Please set the CUDA_VERSION environment variable."
+          exit 1
+          else
+          echo "Using latest CUDA version $CUDA_VERSION"
+          fi
+          else
+          echo "CUDA_VERSION is set to ${CUDA_VERSION}"
           fi
 
-          # Check that the CUDA_VERISON is set and valid
+          # Validate that the specified CUDA version is available for the RHEL version
           url="https://developer.download.nvidia.com/compute/cuda/repos/rhel${RHEL_VERSION}/x86_64/"
-
-          # Get the page content and filter for lines containing "cuda-toolkit"
           content=$(curl -s "$url" | grep "cuda-toolkit")
-
-          # Parse the content for versions and filter out the ones containing "config"
           versions=$(echo "$content" | sed -nE 's/.*cuda-toolkit-[0-9]+-[0-9]+-([0-9]+\.[0-9]+\.[0-9]+-[0-9]+).*/\1/p' | grep -v "config" | uniq)
 
-          # Check if the provided version is valid
           if echo "$versions" | grep -q "^${CUDA_VERSION}-[0-9]\+$"; then
-              echo "The provided CUDA toolkit version ($CUDA_VERSION) is valid."
+          echo "The provided CUDA toolkit version ($CUDA_VERSION) is valid."
           else
-              echo "The provided version ($CUDA_VERSION) is not valid. Please choose a valid version from the list:"
-              echo "$versions" | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)-[0-9]+/\1/'
-              exit 1
+          echo "The provided version ($CUDA_VERSION) is not valid. Please choose a valid version from the list:"
+          echo "$versions" | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)-[0-9]+/\1/'
+          exit 1
           fi
       fi
 
