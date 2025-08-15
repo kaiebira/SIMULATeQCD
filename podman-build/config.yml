@@ -31,7 +31,7 @@ RHEL_VERSION: latest
 # This is the CUDA version you want to use for the build. See https://developer.nvidia.com/cuda-toolkit-archive
 # for a list of versions. If you set it to latest, the code will check that link for the highest
 # version and use it.
-CUDA_VERSION: latest
+CUDA_VERSION: 12.8.0
 
 # USE_GPU_P2P enables or disables the use of GPU peer-to-peer (P2P) communication when building an
 # application with CUDA. Nvidia's proprietary GPU interconnect is called NVLink. GPU P2P communication
@@ -76,11 +76,11 @@ USE_HIP_AMD: "OFF"
 # Sienna Cichlid: gfx1030
 # Navy Flounder: gfx1031
 # See https://rocmdocs.amd.com/projects/ROCgdb/en/hybrid/gdb/doc/gdb/AMD-GPU.html
-ARCHITECTURE: "70"
+ARCHITECTURE: "89"
 
 # The build target. If you specify nothing, it will build all targets. You can get a list of possible build
 # targets by running `./simulateqcd list`
-TARGET:
+TARGET: generateQuenched
 
 # These are added to the end of the cmake line. Any other options you would like to add to cmake you can add here
 ADDITIONAL_CMAKE_OPTIONS: 

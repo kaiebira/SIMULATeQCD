@@ -11,7 +11,17 @@
 #include <cuda_runtime_api.h>
 #include <cuda_fp16.h>
 #include <utility>
-#include "nvToolsExt.h"
+
+/// NVTX (NVIDIA Tools Extension) for GPU profiling support.
+/// CUDA 11.6+ uses NVTX v3 (header-only), older versions use NVTX v2.
+/// See: https://github.com/NVIDIA/NVTX for documentation.
+#if defined(CUDART_VERSION) && CUDART_VERSION >= 11060
+    /// NVTX v3 is header-only, no library linking required
+    #include <nvtx3/nvToolsExt.h>
+#else
+    /// NVTX v2 requires linking with libnvToolsExt.so
+    #include "nvToolsExt.h"
+#endif
 
 
 #define gpuError_t                       cudaError_t

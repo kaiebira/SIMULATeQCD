@@ -278,12 +278,34 @@ case $1 in
           # Get the page content and filter for lines containing "rhel"
           content=$(curl -s "$url" | grep "rhel")
 
-          # Parse the content for version numbers and extract the latest one
-          version=$(echo "$content" | sed -nE 's/.*rhel([0-9]+).*/\1/p' | sort -nr | head -n1)
+          # Parse the content for version numbers
+          versions=$(echo "$content" | sed -nE 's/.*rhel([0-9]+).*/\1/p' | sort -unr)
 
-          # Print the latest version
-          RHEL_VERSION="$version"
-          echo "Using latest RHEL version: $RHEL_VERSION"
+          # Check which Rocky Linux version actually exists
+          RHEL_VERSION=""
+          available_versions=""
+          for version in $versions; do
+              # Check if Rocky Linux image exists for this version
+              if podman manifest inspect docker.io/library/rockylinux:${version}-minimal >/dev/null 2>&1; then
+                  if [[ -z "$RHEL_VERSION" ]]; then
+                      RHEL_VERSION="$version"
+                  fi
+                  available_versions="${available_versions} ${version}"
+              fi
+          done
+
+          # Exit with error if detection fails
+          if [[ -z "$RHEL_VERSION" ]]; then
+              echo "ERROR: Could not auto-detect latest RHEL version."
+              echo "Available Rocky Linux versions: ${available_versions:-none found}"
+              echo ""
+              echo "Please edit podman-build/config.yml and set RHEL_VERSION"
+              echo "Example:"
+              echo "  RHEL_VERSION: 9"
+              exit 1
+          fi
+          
+          echo "Auto-detected latest RHEL version: $RHEL_VERSION"
       fi
 
       # Check to make sure CUDA version is valid if using nvidia or hip_nvidia

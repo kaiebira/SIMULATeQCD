@@ -428,11 +428,18 @@ inline void NeighborInfo::exchangeProcessInfo() {
 inline bool NeighborInfo::IsGPUCapableP2P() const {
     // This requires two processes accessing each device, so we need
     // to ensure exclusive or prohibited mode is not set
-    if (myProp.computeMode != gpuComputeModeDefault) {
-        throw std::runtime_error(stdLogger.fatal("Device ", myProp.name, " is in an unsupported compute mode (exclusive or prohibited mode is NOT allowed)"));
-    }
+    
+    /// CUDA 13.0 removed computeMode from cudaDeviceProp structure.
+    /// For CUDA 13+, we skip this check as modern GPUs handle compute mode
+    /// management internally and always allow P2P-capable configurations.
+    /// See: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__DEVICE.html
+    #if defined(CUDART_VERSION) && CUDART_VERSION < 13000
+        if (myProp.computeMode != gpuComputeModeDefault) {
+            throw std::runtime_error(stdLogger.fatal("Device ", myProp.name, " is in an unsupported compute mode (exclusive or prohibited mode is NOT allowed)"));
+        }
+    #endif
+    
     return (bool) (myProp.major >= 2);
-
 }
 
 
