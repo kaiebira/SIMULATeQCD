@@ -308,42 +308,205 @@ case $1 in
           echo "Auto-detected latest RHEL version: $RHEL_VERSION"
       fi
 
-      # Check to make sure CUDA version is valid if using nvidia or hip_nvidia
+      # Handle CUDA version for nvidia and hip_nvidia profiles
       if [[ "$PROFILE" == "nvidia" || "$PROFILE" == "hip_nvidia" ]]; then
 
-          # This function gets the latest CUDA version from NVIDIA's website
-          get_latest_cuda_version() {
-          local url="https://developer.nvidia.com/cuda-toolkit-archive"
-          local content=$(curl -s "$url")
-          local latest_version=$(echo "$content" | grep -oP 'Latest Release[\s\S]*?CUDA Toolkit \K[0-9]+\.[0-9]+\.[0-9]+')
-          echo "$latest_version"
+          # Function to check if a Docker image exists on Docker Hub
+          # Parameters:
+          #   $1: The Docker image namespace/name (e.g., "nvidia/cuda")
+          #   $2: The image tag to check
+          # Returns:
+          #   0 if the image exists, 1 otherwise
+          function docker_image_exists() {
+              local image="$1"
+              local tag="$2"
+              
+              # Parse namespace and repository from image
+              if [[ "$image" == *"/"* ]]; then
+                  namespace="${image%/*}"
+                  repo="${image#*/}"
+              else
+                  namespace="library"
+                  repo="$image"
+              fi
+              
+              # Query Docker Hub API v2 for the specific tag
+              response=$(curl -s "https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repo}/tags/${tag}")
+              
+              # Check if the response contains the tag (not an error message)
+              if echo "$response" | grep -q '"name"'; then
+                  return 0
+              else
+                  return 1
+              fi
           }
 
-          # Check if CUDA_VERSION is set to "latest" and if so, fetch the latest version
+          # Function to get all available CUDA tags for a specific Rocky Linux version
+          # Parameters:
+          #   $1: The RHEL/Rocky Linux version number (e.g., "8", "9")
+          #   $2: Optional "silent" flag to suppress progress messages
+          # Returns:
+          #   A sorted list of CUDA versions available for the specified Rocky Linux version
+          function get_available_cuda_rocky_tags() {
+              local rhel_version="$1"
+              local silent="$2"
+              local page_size=100
+              local next_url="https://hub.docker.com/v2/namespaces/nvidia/repositories/cuda/tags?page_size=${page_size}"
+              local all_tags=""
+              
+              # Only show progress message if not in silent mode
+              if [[ "$silent" != "silent" ]]; then
+                  echo "Querying Docker Hub for available CUDA images..." >&2
+              fi
+              
+              # Docker Hub API paginates results, so we need to iterate through all pages
+              while [[ -n "$next_url" && "$next_url" != "null" ]]; do
+                  response=$(curl -s "$next_url")
+                  
+                  # Extract tags matching pattern: *-devel-rockylinux{version}
+                  tags=$(echo "$response" | grep -oP '"name":"[^"]*-devel-rockylinux'${rhel_version}'"' | sed 's/"name":"//;s/"//')
+                  all_tags="${all_tags}${tags}"$'\n'
+                  
+                  # Get next page URL (Docker Hub uses \u0026 for & in JSON)
+                  next_url=$(echo "$response" | grep -oP '"next":"[^"]*"' | sed 's/"next":"//;s/"//' | sed 's/\\u0026/\&/g')
+              done
+              
+              # Extract CUDA version numbers, sort them, and remove duplicates
+              echo "$all_tags" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+-devel-rockylinux'${rhel_version}'$' | \
+                  sed 's/-devel-rockylinux'${rhel_version}'$//' | \
+                  sort -V | uniq
+          }
+
+          # Function to get the latest CUDA version for a specific RHEL version
+          # Parameters:
+          #   $1: The RHEL/Rocky Linux version number
+          # Returns:
+          #   The newest available CUDA version for the specified RHEL version
+          function get_latest_cuda_for_rhel() {
+              local rhel_version="$1"
+              local cuda_versions=$(get_available_cuda_rocky_tags "$rhel_version" "silent")
+              
+              if [[ -z "$cuda_versions" ]]; then
+                  return 1
+              fi
+              
+              # Get the last (newest) version from the sorted list
+              echo "$cuda_versions" | tail -n1
+          }
+
+          # Function to dynamically discover all Rocky Linux versions with CUDA support
+          # This avoids hardcoding version numbers and automatically adapts to new releases
+          # Returns:
+          #   A reverse-sorted list of Rocky Linux version numbers (newest first)
+          function get_all_rocky_versions_with_cuda() {
+              local page_size=100
+              local next_url="https://hub.docker.com/v2/namespaces/nvidia/repositories/cuda/tags?page_size=${page_size}"
+              local all_versions=""
+              
+              # Iterate through all pages of Docker Hub results
+              while [[ -n "$next_url" && "$next_url" != "null" ]]; do
+                  response=$(curl -s "$next_url")
+                  
+                  # Extract Rocky Linux version numbers from all CUDA tags
+                  # Pattern: extract the number after "rockylinux" in tags like "12.8.0-devel-rockylinux9"
+                  versions=$(echo "$response" | grep -oP '"name":"[^"]*-devel-rockylinux[0-9]+' | \
+                            grep -oP 'rockylinux[0-9]+' | \
+                            sed 's/rockylinux//' | \
+                            sort -n | uniq)
+                  
+                  for ver in $versions; do
+                      all_versions="${all_versions} ${ver}"
+                  done
+                  
+                  # Get next page URL
+                  next_url=$(echo "$response" | grep -oP '"next":"[^"]*"' | sed 's/"next":"//;s/"//' | sed 's/\\u0026/\&/g')
+              done
+              
+              # Return unique versions in reverse order (newest first)
+              echo "$all_versions" | tr ' ' '\n' | sort -rn | uniq
+          }
+
+          # Function to validate and set RHEL version
+          function validate_rhel_version() {
+              local requested_version="$1"
+              
+              if [[ "$requested_version" == "latest" ]]; then
+                  echo "Determining latest RHEL version with CUDA support..." >&2
+                  # Get all available versions dynamically
+                  local available_versions=$(get_all_rocky_versions_with_cuda)
+                  
+                  if [[ -z "$available_versions" ]]; then
+                      echo "Error: Could not find any Rocky Linux CUDA images on Docker Hub" >&2
+                      return 1
+                  fi
+                  
+                  # Return the first (highest) version
+                  echo "$available_versions" | head -n1
+                  return 0
+              else
+                  # Validate specific version
+                  echo "Validating RHEL version ${requested_version}..." >&2
+                  if get_available_cuda_rocky_tags "$requested_version" "silent" | grep -q .; then
+                      echo "$requested_version"
+                      return 0
+                  else
+                      echo "Error: No CUDA images found for Rocky Linux ${requested_version}" >&2
+                      echo "Checking available RHEL versions with CUDA support..." >&2
+                      
+                      # Get all available versions dynamically
+                      local available_versions=$(get_all_rocky_versions_with_cuda)
+                      
+                      if [[ -n "$available_versions" ]]; then
+                          echo "Available RHEL versions with CUDA support:" >&2
+                          for version in $available_versions; do
+                              echo "  - RHEL ${version}" >&2
+                          done
+                      else
+                          echo "No Rocky Linux versions with CUDA support found on Docker Hub" >&2
+                      fi
+                      return 1
+                  fi
+              fi
+          }
+
+          # Validate and set RHEL version
+          RHEL_VERSION=$(validate_rhel_version "$RHEL_VERSION")
+          if [[ $? -ne 0 ]]; then
+              exit 1
+          fi
+          echo "Using RHEL version: $RHEL_VERSION"
+
+          # Handle CUDA version
           if [[ "$CUDA_VERSION" == "latest" ]]; then
-          CUDA_VERSION=$(get_latest_cuda_version)
-          if [ -z "$CUDA_VERSION" ]; then
-          echo "Failed to fetch the latest CUDA version. Please set the CUDA_VERSION environment variable."
-          exit 1
+              CUDA_VERSION=$(get_latest_cuda_for_rhel "$RHEL_VERSION")
+              if [[ $? -ne 0 || -z "$CUDA_VERSION" ]]; then
+                  echo "Error: Could not determine latest CUDA version for RHEL ${RHEL_VERSION}"
+                  echo "Available CUDA versions for Rocky Linux ${RHEL_VERSION}:"
+                  get_available_cuda_rocky_tags "$RHEL_VERSION" | sed 's/^/  - /'
+                  exit 1
+              fi
+               echo "Auto-detected latest CUDA version: $CUDA_VERSION"
           else
-          echo "Using latest CUDA version $CUDA_VERSION"
-          fi
-          else
-          echo "CUDA_VERSION is set to ${CUDA_VERSION}"
+              # Validate specific CUDA version
+              if ! docker_image_exists "nvidia/cuda" "${CUDA_VERSION}-devel-rockylinux${RHEL_VERSION}"; then
+                  echo "Error: CUDA image nvidia/cuda:${CUDA_VERSION}-devel-rockylinux${RHEL_VERSION} is not valid"
+                  echo "Available CUDA versions for Rocky Linux ${RHEL_VERSION}:"
+                  get_available_cuda_rocky_tags "$RHEL_VERSION" | sed 's/^/  - /'
+                  exit 1
+              fi
+              echo "Validated CUDA version: $CUDA_VERSION"
           fi
 
-          # Validate that the specified CUDA version is available for the RHEL version
-          url="https://developer.download.nvidia.com/compute/cuda/repos/rhel${RHEL_VERSION}/x86_64/"
-          content=$(curl -s "$url" | grep "cuda-toolkit")
-          versions=$(echo "$content" | sed -nE 's/.*cuda-toolkit-[0-9]+-[0-9]+-([0-9]+\.[0-9]+\.[0-9]+-[0-9]+).*/\1/p' | grep -v "config" | uniq)
-
-          if echo "$versions" | grep -q "^${CUDA_VERSION}-[0-9]\+$"; then
-          echo "The provided CUDA toolkit version ($CUDA_VERSION) is valid."
-          else
-          echo "The provided version ($CUDA_VERSION) is not valid. Please choose a valid version from the list:"
-          echo "$versions" | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)-[0-9]+/\1/'
-          exit 1
+          # Final validation and display
+          cuda_image="nvidia/cuda:${CUDA_VERSION}-devel-rockylinux${RHEL_VERSION}"
+          echo "Using Docker image: $cuda_image"
+          
+          # One final check to be absolutely sure
+          if ! docker_image_exists "nvidia/cuda" "${CUDA_VERSION}-devel-rockylinux${RHEL_VERSION}"; then
+              echo "Error: Final validation failed for ${cuda_image}"
+              exit 1
           fi
+          echo "✓ Image validated and available on Docker Hub"
       fi
 
       if [[ "$PROFILE" == "hip_nvidia" ]]; then
