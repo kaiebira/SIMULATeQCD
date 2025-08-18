@@ -14,7 +14,7 @@ ARG RHEL_VERSION
 
 ENV BUILDAH_ISOLATION=chroot
 
-# Install shadow-utils first for user/group management commands
+# Install shadow-utils first for user/group management commands (RHEL < 9)
 RUN microdnf install -y shadow-utils \
     && microdnf clean all
 
