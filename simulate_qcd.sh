@@ -506,7 +506,7 @@ case $1 in
               echo "Error: Final validation failed for ${cuda_image}"
               exit 1
           fi
-          echo "✓ Image validated and available on Docker Hub"
+          echo "Image validated"
       fi
 
       if [[ "$PROFILE" == "hip_nvidia" ]]; then
