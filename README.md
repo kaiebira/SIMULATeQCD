@@ -30,7 +30,7 @@ This is needed for downloading configurations used in the unit tests. Then run
 git clone https://github.com/LatticeQCD/SIMULATeQCD.git -b v1.2.0
 ```
 
-### Compile Using Container
+### Compile Using Container (CURRENTLY BROKEN)
 
 To build using the container, you need to have `podman` properly configured on your system.  
 You can find more detailed instructions about the container in the [Getting Started](https://latticeqcd.github.io/SIMULATeQCD/01_gettingStarted/gettingStarted.html) section of the documentation.
@@ -138,6 +138,7 @@ or clarke(dot)davida(at)gmail.com.
 [G. Curell](https://github.com/grantcurell/),
 [H. Dick](https://github.com/redweasel),
 [J. Goswami](https://github.com/jishnuxx),
+[C. Hoying](https://github.com/goracle),
 [O. Kaczmarek](https://github.com/olaf-kaczmarek),
 [J. Kim](https://github.com/kimjangho1120),
 [R. Larsen](https://github.com/RasmusNL),
@@ -153,10 +154,11 @@ or clarke(dot)davida(at)gmail.com.
 If you are using this code in your research please cite:
 
 - *L. Mazur, Topological aspects in lattice QCD, Ph.D. thesis, Bielefeld University (2021), [https://doi.org/10.4119/unibi/2956493](https://doi.org/10.4119/unibi/2956493)*
-- *L. Mazur, D.Bollweg, D. A. Clarke, L. Altenkort et al., SIMULATeQCD: A simple multi-GPU lattice code for QCD calculations, [https://arxiv.org/abs/2306.01098](https://arxiv.org/abs/2306.01098)*
+- *L. Mazur, D.Bollweg, D. A. Clarke, L. Altenkort et al., SIMULATeQCD: A simple multi-GPU lattice code for QCD calculations, [https://arxiv.org/abs/2306.01098](https://doi.org/10.1016/j.cpc.2024.109164)*
+
 
 ## Acknowledgments
-- This work is supported by the U.S. Department of Energy, Office of Science within the framework of Scientific Discovery through Advance Computing (SciDAC).
+- This work was supported by the U.S. Department of Energy, Office of Science within the framework of Scientific Discovery through Advance Computing (SciDAC).
 - We acknowledge support by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) through the CRC-TR 211
 'Strong-interaction matter under extreme conditions'– project number 315477589 – TRR 211.
 - This work was partly performed in the framework of the PUNCH4NFDI consortium supported by DFG fund "NFDI 39/1", Germany.
