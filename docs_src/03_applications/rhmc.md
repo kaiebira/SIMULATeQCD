@@ -49,6 +49,9 @@ $
     c_\text{rect} = -1/6.
 $
 
+The fermion force is described in more detail in the documentation [here](../05_modules/HISQforce.md).
+There, we list the coefficients of the various link constructs needed for the force and smearing.
+
 To use the RHMC class, the user will only have to call the constructor and two functions
 ```C++
 rhmc(RhmcParameters rhmc_param, Gaugefield<floatT,onDevice,All,HaloDepth> &gaugeField, uint4* rand_state)
