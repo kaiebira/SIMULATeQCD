@@ -1,25 +1,27 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rational Hybrid Monte Carlo &mdash; SIMULATeQCD 1.2.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=99a3524d" />
+
   
-        <script src="../_static/documentation_options.js?v=6efca38a"></script>
-        <script src="../_static/doctools.js?v=9bcbadda"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
-        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=6efca38a"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -32,11 +34,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #343131" >
-            <a href="../index.html" class="icon icon-home"> SIMULATeQCD
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SIMULATeQCD
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -70,9 +76,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="applications.html">Applications</a> &raquo;</li>
-      <li>Rational Hybrid Monte Carlo</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="applications.html">Applications</a></li>
+      <li class="breadcrumb-item active">Rational Hybrid Monte Carlo</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/03_applications/rhmc.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -119,16 +125,8 @@ that the inversion carried out in that equation is very fast.</p>
 for multiple RHS and multiple shifts to boost performance.
 The <a class="reference internal" href="../05_modules/integrator.html"><span class="doc std std-doc">integrator</span></a> uses a leapfrog by default, but it
 can use an Omelyan on the largest scale.
-We use the HISQ/tree action, which is a tree-level improved
-Lüscher-Weisz action in the gauge sector. The relative
-weights of the plaquette and rectangle terms are</p>
-<p><span class="math notranslate nohighlight">\(
-    c_\text{plaq} = 5/4,
-\)</span></p>
-<p><span class="math notranslate nohighlight">\(
-    c_\text{rect} = -1/6.
-\)</span></p>
-<p>The fermion force is described in more detail in the documentation <a class="reference internal" href="../05_modules/HISQforce.html"><span class="doc std std-doc">here</span></a>.
+We use the HISQ/tree action in the gauge sector.
+The fermion force is described in more detail in the documentation <a class="reference internal" href="../05_modules/HISQforce.html"><span class="doc std std-doc">here</span></a>.
 There, we list the coefficients of the various link constructs needed for the force and smearing.</p>
 <p>To use the RHMC class, the user will only have to call the constructor and two functions</p>
 <div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="n">rhmc</span><span class="p">(</span><span class="n">RhmcParameters</span><span class="w"> </span><span class="n">rhmc_param</span><span class="p">,</span><span class="w"> </span><span class="n">Gaugefield</span><span class="o">&lt;</span><span class="n">floatT</span><span class="p">,</span><span class="n">onDevice</span><span class="p">,</span><span class="n">All</span><span class="p">,</span><span class="n">HaloDepth</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">gaugeField</span><span class="p">,</span><span class="w"> </span><span class="n">uint4</span><span class="o">*</span><span class="w"> </span><span class="n">rand_state</span><span class="p">)</span>
