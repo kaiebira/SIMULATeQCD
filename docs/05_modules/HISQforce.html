@@ -1,25 +1,27 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HISQ force &mdash; SIMULATeQCD 1.2.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <title>HISQ action &mdash; SIMULATeQCD 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=99a3524d" />
+
   
-        <script src="../_static/documentation_options.js?v=6efca38a"></script>
-        <script src="../_static/doctools.js?v=9bcbadda"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
-        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=6efca38a"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -32,11 +34,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #343131" >
-            <a href="../index.html" class="icon icon-home"> SIMULATeQCD
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SIMULATeQCD
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -49,7 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../04_codeBase/codeBase.html">Code base</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="gaugeUpdates.html">Gauge Updates (HB and OR)</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">HISQ force</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">HISQ action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dslash.html">Dslash</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inverter.html">Inverter (Conjugate Gradient)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="integrator.html">Integrator</a></li>
@@ -72,9 +78,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">Modules</a> &raquo;</li>
-      <li>HISQ force</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">HISQ action</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/05_modules/HISQforce.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,17 +90,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="hisq-force">
-<h1>HISQ force<a class="headerlink" href="#hisq-force" title="Link to this heading"></a></h1>
-<p>To carry out the MD of the <a class="reference internal" href="../03_applications/rhmc.html"><span class="doc std std-doc">RHMC</span></a>, one needs the
-fermion and gauge forces.
-The fermion force in SIMULATeQCD follows the <a class="reference external" href="https://github.com/milc-qcd/milc_qcd">MILC</a> code.
+  <section class="tex2jax_ignore mathjax_ignore" id="hisq-action">
+<h1>HISQ action<a class="headerlink" href="#hisq-action" title="Link to this heading"></a></h1>
+<p>This code uses the highly improved staggered quark (HISQ) action, first
+introduced <a class="reference external" href="https://doi.org/10.1103/PhysRevD.75.054502">in this paper</a>.
+To carry out the MD of the <a class="reference internal" href="../03_applications/rhmc.html"><span class="doc std std-doc">RHMC</span></a>, one needs the
+fermion and gauge forces. The HISQ force uses AsqTad-like smears to reduce taste
+violations, along with terms to remove further <span class="math notranslate nohighlight">\(\mathcal{O}(a^2)\)</span> errors
+introduced by this smearing. Overall, the HISQ action is expected to have
+no tree-level <span class="math notranslate nohighlight">\(\mathcal{O}(a^2)\)</span> error.</p>
+<p>The fermion force in SIMULATeQCD follows the <a class="reference external" href="https://github.com/milc-qcd/milc_qcd">MILC</a> code.
 A very readable explanation how improved staggered forces are constructed generically
 can be found <a class="reference external" href="https://doi.org/10.22323/1.042.0047">here</a>. Helpful comments on the roles
 of the various terms in the smearing can be found
 <a class="reference external" href="https://github.com/lattice/quda/wiki/HISQ-Stencil">here</a>.</p>
-<section id="smearing">
-<h2>Smearing<a class="headerlink" href="#smearing" title="Link to this heading"></a></h2>
+<section id="gauge-force">
+<h2>Gauge force<a class="headerlink" href="#gauge-force" title="Link to this heading"></a></h2>
+<p>We use the HISQ/tree action, which is a tree-level improved
+Lüscher-Weisz action in the gauge sector. The relative
+weights of the plaquette and rectangle terms are</p>
+<p><span class="math notranslate nohighlight">\(
+    c_\text{plaq} = 5/4,
+\)</span></p>
+<p><span class="math notranslate nohighlight">\(
+    c_\text{rect} = -1/6.
+\)</span></p>
+</section>
+<section id="fermion-force">
+<h2>Fermion force<a class="headerlink" href="#fermion-force" title="Link to this heading"></a></h2>
+<section id="asqtad-like-smears">
+<h3>AsqTad-like smears<a class="headerlink" href="#asqtad-like-smears" title="Link to this heading"></a></h3>
+<p>As stated above, the HISQ force uses smearing to suppress taste exchange.
+We start by establishing some background and terminology before introducing
+the HISQ smear.</p>
 <p>Typically the gauge connection between two neighboring sites <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>
 on the lattice is just a single link <span class="math notranslate nohighlight">\(U(x,y)\)</span>, which is in some sense the
 most local connection imaginable. One can also relax this locality, so that
@@ -132,6 +160,7 @@ which can be written as</p>
 differs from the 5-link as it is instead restricted to a plane.
 Fat7 smears have the same form, but with <span class="math notranslate nohighlight">\(c_L=0\)</span>. In the parlance of many LQCD practitioners,
 the original fields <span class="math notranslate nohighlight">\(U\)</span> are called <em>thin links</em> and the smeared <span class="math notranslate nohighlight">\(V\)</span> <em>fat links</em>.</p>
+</section>
 <section id="hisq-smearing">
 <h3>HISQ smearing<a class="headerlink" href="#hisq-smearing" title="Link to this heading"></a></h3>
 <p>Taste breaking can be thought of through <em>taste exchange</em>, where
@@ -221,8 +250,8 @@ How to construct the smeared links is shown in</p>
 </div>
 </section>
 </section>
-<section id="fermion-force">
-<h2>Fermion force<a class="headerlink" href="#fermion-force" title="Link to this heading"></a></h2>
+<section id="id1">
+<h2>Fermion force<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>The fermion part of the action can be expressed as</p>
 <p><span class="math notranslate nohighlight">\(
 S_f=\bra{\Phi}\left(D^{\dagger} D\right)^{-N_f/4}\ket{\Phi},

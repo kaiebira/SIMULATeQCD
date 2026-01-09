@@ -1,15 +1,40 @@
-# HISQ force 
+# HISQ action 
 
+This code uses the highly improved staggered quark (HISQ) action, first
+introduced [in this paper](https://doi.org/10.1103/PhysRevD.75.054502).
 To carry out the MD of the [RHMC](../03_applications/rhmc.md), one needs the
-fermion and gauge forces.
+fermion and gauge forces. The HISQ force uses AsqTad-like smears to reduce taste
+violations, along with terms to remove further $\mathcal{O}(a^2)$ errors
+introduced by this smearing. Overall, the HISQ action is expected to have
+no tree-level $\mathcal{O}(a^2)$ error.
+
 The fermion force in SIMULATeQCD follows the [MILC](https://github.com/milc-qcd/milc_qcd) code. 
 A very readable explanation how improved staggered forces are constructed generically
 can be found [here](https://doi.org/10.22323/1.042.0047). Helpful comments on the roles
 of the various terms in the smearing can be found 
 [here](https://github.com/lattice/quda/wiki/HISQ-Stencil).
 
+## Gauge force
 
-## Smearing
+We use the HISQ/tree action, which is a tree-level improved
+Lüscher-Weisz action in the gauge sector. The relative
+weights of the plaquette and rectangle terms are
+
+$
+    c_\text{plaq} = 5/4,
+$
+
+$
+    c_\text{rect} = -1/6.
+$
+
+## Fermion force
+
+### AsqTad-like smears
+
+As stated above, the HISQ force uses smearing to suppress taste exchange.
+We start by establishing some background and terminology before introducing
+the HISQ smear.
 
 Typically the gauge connection between two neighboring sites $x$ and $y$
 on the lattice is just a single link $U(x,y)$, which is in some sense the

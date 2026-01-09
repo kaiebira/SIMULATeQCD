@@ -37,18 +37,7 @@ The inverter is a [conjugate gradient](../05_modules/inverter.md), with possibil
 for multiple RHS and multiple shifts to boost performance.
 The [integrator](../05_modules/integrator.md) uses a leapfrog by default, but it
 can use an Omelyan on the largest scale.
-We use the HISQ/tree action, which is a tree-level improved
-Lüscher-Weisz action in the gauge sector. The relative
-weights of the plaquette and rectangle terms are
-
-$
-    c_\text{plaq} = 5/4,
-$
-
-$
-    c_\text{rect} = -1/6.
-$
-
+We use the HISQ/tree action in the gauge sector.
 The fermion force is described in more detail in the documentation [here](../05_modules/HISQforce.md).
 There, we list the coefficients of the various link constructs needed for the force and smearing.
 
