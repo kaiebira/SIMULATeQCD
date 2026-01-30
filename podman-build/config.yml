@@ -1,9 +1,8 @@
 # Options are nvidia, hip_nvidia, and hip_amd. Options are defined at https://latticeqcd.github.io/SIMULATeQCD/01_gettingStarted/gettingStarted.html#
 # nvidia - Builds the source just using CUDA. See https://latticeqcd.github.io/SIMULATeQCD/01_gettingStarted/gettingStarted.html#building-source-with-cuda
-# Build the source with HIP for Nvidia Platforms. See https://latticeqcd.github.io/SIMULATeQCD/01_gettingStarted/gettingStarted.html#building-source-with-hip-for-nvidia-platforms-experimental
-# Build the source with HIP for AMD Platforms. See https://latticeqcd.github.io/SIMULATeQCD/01_gettingStarted/gettingStarted.html#building-source-with-hip-for-amd-platforms-experimental
+# hip_nvidia - Build the source with HIP for Nvidia Platforms. See https://latticeqcd.github.io/SIMULATeQCD/01_gettingStarted/gettingStarted.html#building-source-with-hip-for-nvidia-platforms-experimental
+# hip_amd - Build the source with HIP for AMD Platforms. See https://latticeqcd.github.io/SIMULATeQCD/01_gettingStarted/gettingStarted.html#building-source-with-hip-for-amd-platforms-experimental
 # Note: This automatically sets the CMake variable BACKEND.
-# TODO - ONLY nvidia IS IMPLEMENTED. AMD IS STILL A WORK IN PROGRESS.
 PROFILE: nvidia
 
 # This controls the number of threads that the build will spawn. It is used as
@@ -25,7 +24,7 @@ USE_GPU_AWARE_MPI: "ON"
 # older operating systems. This can be ignored when using the hip_amd profile.
 # You will generally want to leave this at latest. This tells the code to grab
 # the latest version available. You can also set it to RHEL's major version number.
-# Ex: 7, 8, 9.
+# Ex: 8, 9, 10.
 RHEL_VERSION: latest
 
 # This is the CUDA version you want to use for the build. See https://developer.nvidia.com/cuda-toolkit-archive
@@ -80,7 +79,7 @@ ARCHITECTURE: "70"
 
 # The build target. If you specify nothing, it will build all targets. You can get a list of possible build
 # targets by running `./simulateqcd list`
-TARGET:
+TARGET: 
 
 # These are added to the end of the cmake line. Any other options you would like to add to cmake you can add here
 ADDITIONAL_CMAKE_OPTIONS: 

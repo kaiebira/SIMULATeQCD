@@ -14,6 +14,10 @@ ARG RHEL_VERSION
 
 ENV BUILDAH_ISOLATION=chroot
 
+# Install shadow-utils first for user/group management commands (RHEL < 9)
+RUN microdnf install -y shadow-utils \
+    && microdnf clean all
+
 # This code is just ensuring that our user exists and is running with the same permissions as the host user.
 # This is usually userid/gid 1000
 RUN echo "GROUP_ID=${GROUP_ID} GROUPNAME=${GROUPNAME}" \
@@ -25,10 +29,9 @@ RUN echo "GROUP_ID=${GROUP_ID} GROUPNAME=${GROUPNAME}" \
     && useradd -l -u ${USER_ID} -g ${GROUPNAME} ${USERNAME}
 
 # Install dependencies
-RUN microdnf update -y \
-    && microdnf install -y cmake gcc-c++ openmpi-devel kernel-devel openmpi \
+RUN microdnf install -y cmake gcc-c++ openmpi-devel kernel-devel openmpi \
     && microdnf clean all
-
+    
 # Set environment variables for CUDA
 ENV PATH=/usr/lib64/openmpi/bin:$PATH
 ENV PATH=/usr/local/cuda/bin:$PATH

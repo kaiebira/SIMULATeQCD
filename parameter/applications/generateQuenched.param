@@ -17,7 +17,7 @@
 #                    nconfs: How many configurations to save?
 #                    stream: stream/series label
 #
-Lattice          = 64 64 64 16
+Lattice          = 20 20 20 4
 Nodes            = 1 1 1 1
 beta             = 6.87361
 format           = nersc
